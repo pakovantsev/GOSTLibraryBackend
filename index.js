@@ -1,7 +1,15 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const router = require('./routes/router')
+const cors = require('cors');
 var app = express()
+
+var corsOptions = {
+    origin: "*"
+}
+
+app.options('*', cors(corsOptions))
+app.use(cors(corsOptions));
 
 
 app.use('/api', router)

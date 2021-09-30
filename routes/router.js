@@ -7,7 +7,7 @@ const remove = require('../controller/library')
 const bodyparser = require('body-parser');
 
 router.use(bodyparser.json())
-router.post('/create/:code',create.create)
+router.post('/create',create.create)
 router.get('/',view.view)
 router.patch('/:id',update.update)
 router.delete('/delete/:id',remove.remove)
