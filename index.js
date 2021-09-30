@@ -1,10 +1,10 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const router = require('./routes/router')
 var app = express()
 
-app.get('/', function (req, res) {
-    res.send('hello world')
-})
+
+app.use('/api', router)
 
 mongoose.connect('mongodb://localhost/gostlibrarydb', { useNewUrlParser: true });
 mongoose.connection.once('open', function () {
