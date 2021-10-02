@@ -1,4 +1,4 @@
-const Book = require('../models/book')
+const Book = require('../models/Sources/book')
 const People = require('../models/people')
 
 function create(req, res, _) {
