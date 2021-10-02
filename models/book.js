@@ -41,7 +41,7 @@ const book = new mongoose.Schema({
         type: String,
         required: true,
     },
-    nunberOfPages: {
+    numberOfPages: {
         type: Number,
         required: true,
     },
