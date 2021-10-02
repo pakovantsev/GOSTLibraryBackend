@@ -25,9 +25,11 @@ const book = new mongoose.Schema({
     } ],
     place: {
         type: String,
+        required: true,
     },
     publishingHouse: {
         type: String,
+        required: true,
     },
     rePlace: {
         type: String,
@@ -37,9 +39,11 @@ const book = new mongoose.Schema({
     },
     yearOfPublishing: {
         type: String,
+        required: true,
     },
     nunberOfPages: {
         type: Number,
+        required: true,
     },
     tomNumber: {
         type: Number,
