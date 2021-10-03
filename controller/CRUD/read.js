@@ -90,7 +90,7 @@ async function viewArticleMagazine(_, res, _) {
     res.send(response)
 }
 
-function viewArticleNewspaper(_, res, _) {
+async function viewArticleNewspaper(_, res, _) {
     const articles = await ArticleNewspaper.find({});
     const response = await Promise.all(articles.map(async value => {
         const authors = await Promise.all(value.authors.map(async author => {
@@ -105,10 +105,19 @@ function viewArticleNewspaper(_, res, _) {
     res.send(response)
 }
 
-function viewConference(_, res, _) {
-    Conference.find({}).then(data => {
-        res.send(data);
-    });
+async function viewConference(_, res, _) {
+    const conferences = await Conference.find({});
+    const response = await Promise.all(conferences.map(async value => {
+        const editors = await Promise.all(value.editors.map(async editor => {
+            return await People.findOne({ _id: editor })
+        }))
+        // TODO избавиться от _doc
+        return {
+            ...value._doc,
+            editors
+        }
+    }));
+    res.send(response)
 }
 
 function viewSite(_, res, _) {
