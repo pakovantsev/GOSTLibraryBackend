@@ -75,16 +75,34 @@ async function viewArticleBook(_, res, _) {
     res.send(response)
 }
 
-function viewArticleMagazine(_, res, _) {
-    ArticleMagazine.find({}).then(data => {
-        res.send(data);
-    });
+async function viewArticleMagazine(_, res, _) {
+    const articles = await ArticleMagazine.find({});
+    const response = await Promise.all(articles.map(async value => {
+        const authors = await Promise.all(value.authors.map(async author => {
+            return await People.findOne({ _id: author })
+        }))
+        // TODO избавиться от _doc
+        return {
+            ...value._doc,
+            authors
+        }
+    }));
+    res.send(response)
 }
 
 function viewArticleNewspaper(_, res, _) {
-    ArticleNewspaper.find({}).then(data => {
-        res.send(data);
-    });
+    const articles = await ArticleNewspaper.find({});
+    const response = await Promise.all(articles.map(async value => {
+        const authors = await Promise.all(value.authors.map(async author => {
+            return await People.findOne({ _id: author })
+        }))
+        // TODO избавиться от _doc
+        return {
+            ...value._doc,
+            authors
+        }
+    }));
+    res.send(response)
 }
 
 function viewConference(_, res, _) {
