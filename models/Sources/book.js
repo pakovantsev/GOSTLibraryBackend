@@ -21,7 +21,8 @@ const book = new mongoose.Schema({
         ref: 'People',
     } ],
     collectives: [ {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Collectives',
     } ],
     place: {
         type: String,
@@ -53,7 +54,7 @@ const book = new mongoose.Schema({
     },
     tomName: {
         type: String,
-    },
+    }
 })
 
 module.exports = mongoose.model('Book', book)
