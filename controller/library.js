@@ -7,7 +7,7 @@ const Site = require('../models/Sources/site')
 const People = require('../models/people')
 const Collective = require('../models/collective')
 
-function create(req, res, _) {
+async function create(req, res, _) {
     const title = req.body.title;
     const titleInfo = req.body.titleInfo;
     const place = req.body.place;
@@ -19,37 +19,58 @@ function create(req, res, _) {
     const tomNumber = req.body.tomNumber;
     const tomCount = req.body.tomCount;
     const tomName = req.body.tomName;
-    const collectives = req.body.collectives.map(value => {
-        const collective = new Collective({
-            name: value.name
-        })
-        collective.save();
+    const collectives =  await Promise.all(req.body.collectives.map(async value => {
+        let collective = await Collective.findOne({ name: value.name });
+        if (!collective) {
+            collective = new Collective({
+                name: value.name
+            })
+            await collective.save();
+        }
         return collective;
-    });
-    const authors = req.body.authors.map(author => {
-        const people = new People({
+    }));
+    const authors =  await Promise.all(req.body.authors.map(async author => {
+        let people = await People.findOne({
             surname: author.surname,
             initials: author.initials,
-        });
-        people.save();
+        })
+        if (!people) {
+            people = new People({
+                surname: author.surname,
+                initials: author.initials,
+            });
+            await people.save();
+        }
         return people;
-    })
-    const editors = req.body.editors.map(editor => {
-        const people = new People({
+    }))
+    const editors =  await Promise.all(req.body.editors.map(async editor => {
+        let people = await People.findOne({
             surname: editor.surname,
             initials: editor.initials,
         })
-        people.save();
+        if (!people) {
+            people = new People({
+                surname: editor.surname,
+                initials: editor.initials,
+            });
+            await people.save();
+        }
         return people;
-    })
-    const translators = req.body.translators.map(translator => {
-        const people = new People({
+    }))
+    const translators =  await Promise.all(req.body.translators.map(async translator => {
+        let people = await People.findOne({
             surname: translator.surname,
             initials: translator.initials,
         })
-        people.save();
+        if (!people) {
+            people = new People({
+                surname: translator.surname,
+                initials: translator.initials,
+            });
+            await people.save();
+        }
         return people;
-    })
+    }))
     const book = new Book({
         title,
         titleInfo,
