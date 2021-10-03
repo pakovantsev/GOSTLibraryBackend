@@ -7,6 +7,8 @@ const Site = require('../../models/Sources/site')
 const People = require('../../models/people')
 const Collective = require('../../models/collective')
 
+async function read(_, _, _) { }
+
 async function viewBook(_, res, _) {
     const books = await Book.find({});
     const response = await Promise.all(books.map(async value => {
@@ -34,10 +36,43 @@ async function viewBook(_, res, _) {
     res.send(response)
 }
 
-function viewArticleBook(_, res, _) {
-    ArticleBook.find({}).then(data => {
-        res.send(data);
-    });
+async function viewArticleBook(_, res, _) {
+    const articles = await ArticleBook.find({})
+    const response = await Promise.all(articles.map(async value => {
+        const authors = await Promise.all(value.authors.map(async author => {
+            return await People.findOne({ _id: author })
+        }))
+        const bookFind = await Book.find({ _id: value.book });
+        const book = await Promise.all(bookFind.map(async v => {
+            const authors = await Promise.all(v.authors.map(async author => {
+                return await People.findOne({ _id: author })
+            }))
+            const editors = await Promise.all(v.editors.map(async editor => {
+                return await People.findOne({ _id: editor })
+            }))
+            const translators = await Promise.all(v.translators.map(async translator => {
+                return await People.findOne({ _id: translator })
+            }))
+            const collectives = await Promise.all(v.collectives.map(async collective => {
+                return await Collective.findOne({ _id: collective })
+            }))
+            // TODO избавиться от _doc
+            return {
+                ...value._doc,
+                authors,
+                editors,
+                translators,
+                collectives
+            }
+        }));
+        // TODO избавиться от _doc
+        return {
+            ...value._doc,
+            authors,
+            book
+        }
+    }));
+    res.send(response)
 }
 
 function viewArticleMagazine(_, res, _) {
@@ -64,6 +99,7 @@ function viewSite(_, res, _) {
     });
 }
 
+module.exports.read = read
 module.exports.viewBook = viewBook
 module.exports.viewArticleBook = viewArticleBook
 module.exports.viewArticleMagazine = viewArticleMagazine
