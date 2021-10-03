@@ -7,21 +7,63 @@ const Site = require('../models/Sources/site')
 const People = require('../models/people')
 
 function create(req, res, _) {
-    let surname = req.body.surname;
-    let initals = req.body.initals;
-    let author = new People({
-        surname,
-        initals
+    const title = req.body.title;
+    const titleInfo = req.body.titleInfo;
+    const collectives = req.body.collectives;
+    const place = req.body.place;
+    const publishingHouse = req.body.publishingHouse;
+    const rePlace = req.body.rePlace;
+    const rePublishingHouse = req.body.rePublishingHouse;
+    const yearOfPublishing = req.body.yearOfPublishing;
+    const numberOfPages = req.body.numberOfPages;
+    const tomNumber = req.body.tomNumber;
+    const tomCount = req.body.tomCount;
+    const tomName = req.body.tomName;
+    const authors = req.body.authors.map(author => {
+        const people = new People({
+            surname: author.surname,
+            initials: author.initials,
+        });
+        people.save();
+        return people;
     })
-    author.save();
-    let title = req.body.title;
-    let book = new Book({
-        authors: [author],
-        title
+    const editors = req.body.editors.map(editor => {
+        const people = new People({
+            surname: editor.surname,
+            initials: editor.initials,
+        })
+        people.save();
+        return people;
+    })
+    const translators = req.body.translators.map(translator => {
+        const people = new People({
+            surname: translator.surname,
+            initials: translator.initials,
+        })
+        people.save();
+        return people;
+    })
+    const book = new Book({
+        title,
+        titleInfo,
+        authors,
+        editors,
+        translators,
+        collectives,
+        place,
+        publishingHouse,
+        rePlace,
+        rePublishingHouse,
+        yearOfPublishing,
+        numberOfPages,
+        tomCount,
+        tomName,
+        tomNumber,
     })
     book.save().then((data) => {
         res.send(data)
-    })}
+    })
+}
 
 async function viewBook(_, res, _) {
     const books = await Book.find({});
@@ -66,9 +108,9 @@ function viewSite(_, res, _) {
     });
 }
 
-function update(req, res, next) {}
+function update(req, res, next) { }
 
-function remove(req, res, next) {}
+function remove(req, res, next) { }
 
 module.exports.create = create
 module.exports.viewBook = viewBook
