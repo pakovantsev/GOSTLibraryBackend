@@ -1,15 +1,18 @@
 const express = require('express')
 var router = express()
-const create = require('../controller/library')
-const view = require('../controller/library')
-const update = require('../controller/library')
-const remove = require('../controller/library')
+const library = require('../controller/library')
 const bodyparser = require('body-parser');
 
 router.use(bodyparser.json())
-router.post('/create',create.create)
-router.get('/',view.view)
-router.patch('/:id',update.update)
-router.delete('/delete/:id',remove.remove)
+router.get('/book',library.viewBook)
+router.get('/articleBook',library.viewArticleBook)
+router.get('/articleMagazine',library.viewArticleMagazine)
+router.get('/articleNewspaper',library.viewArticleNewspaper)
+router.get('/conference',library.viewConference)
+router.get('/site',library.viewSite)
+
+router.post('/create',library.create)
+router.patch('/:id',library.update)
+router.delete('/delete/:id',library.remove)
 
 module.exports = router
