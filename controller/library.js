@@ -96,11 +96,25 @@ async function create(req, res, _) {
 async function viewBook(_, res, _) {
     const books = await Book.find({});
     const response = await Promise.all(books.map(async value => {
-        const promise = await Promise.all(value.authors.map(async author => {
+        const authors = await Promise.all(value.authors.map(async author => {
             return await People.findOne({ _id: author })
         }))
+        const editors = await Promise.all(value.editors.map(async editor => {
+            return await People.findOne({ _id: editor })
+        }))
+        const translators = await Promise.all(value.translators.map(async translator => {
+            return await People.findOne({ _id: translator })
+        }))
+        const collectives = await Promise.all(value.collectives.map(async collective => {
+            return await Collective.findOne({ _id: collective })
+        }))
+        // TODO избавиться от _doc
         return {
-            authors: promise
+            ...value._doc,
+            authors,
+            editors,
+            translators,
+            collectives
         }
     }));
     res.send(response)
