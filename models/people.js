@@ -5,7 +5,7 @@ const people = new mongoose.Schema({
         type: String,
         required: true
     },
-    initals: {
+    initials: {
         type: String,
         required: true
     },
