@@ -1,10 +1,10 @@
 const mongoose = require('mongoose')
 
-const collectives = new mongoose.Schema({
+const collective = new mongoose.Schema({
     name: {
         type: String,
         required: true
     }
 })
 
-module.exports = mongoose.model('Collectives', collectives)
+module.exports = mongoose.model('Collective', collective)

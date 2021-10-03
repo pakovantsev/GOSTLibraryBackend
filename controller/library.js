@@ -5,11 +5,11 @@ const ArticleNewspaper = require('../models/Sources/articleNewspaper')
 const Conference = require('../models/Sources/conference')
 const Site = require('../models/Sources/site')
 const People = require('../models/people')
+const Collective = require('../models/collective')
 
 function create(req, res, _) {
     const title = req.body.title;
     const titleInfo = req.body.titleInfo;
-    const collectives = req.body.collectives;
     const place = req.body.place;
     const publishingHouse = req.body.publishingHouse;
     const rePlace = req.body.rePlace;
@@ -19,6 +19,13 @@ function create(req, res, _) {
     const tomNumber = req.body.tomNumber;
     const tomCount = req.body.tomCount;
     const tomName = req.body.tomName;
+    const collectives = req.body.collectives.map(value => {
+        const collective = new Collective({
+            name: value.name
+        })
+        collective.save();
+        return collective;
+    });
     const authors = req.body.authors.map(author => {
         const people = new People({
             surname: author.surname,
