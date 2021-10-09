@@ -1,3 +1,12 @@
+import { 
+    BOOK_CODE, 
+    ARTICLE_BOOK_CODE, 
+    ARTICLE_MAGAZINE_CODE, 
+    ARTICLE_NEWSPAPER_CODE, 
+    CONFERENCE_CODE, 
+    SITE_CODE, 
+} from './constants/constants'
+
 const Book = require('../../models/Sources/book')
 const ArticleBook = require('../../models/Sources/articleBook')
 const ArticleMagazine = require('../../models/Sources/articleMagazine')
@@ -7,9 +16,22 @@ const Site = require('../../models/Sources/site')
 const People = require('../../models/people')
 const Collective = require('../../models/collective')
 
-async function read(_, _, _) { }
+async function read(req,res, _) {
+    const code = req.params.code;
+    switch (code) {
+        case BOOK_CODE: res.send(await viewBook());
+        case ARTICLE_BOOK_CODE: res.send(await viewArticleBook());
+        case ARTICLE_MAGAZINE_CODE: res.send(await viewArticleMagazine());
+        case ARTICLE_NEWSPAPER_CODE: res.send(await viewArticleNewspaper());
+        case CONFERENCE_CODE: res.send(await viewConference());
+        case SITE_CODE: res.send(await viewSite());
+        default: res.send(await viewAll());
+    }
+ }
 
-async function viewBook(_, res, _) {
+async function viewAll() { }
+
+async function viewBook() {
     const books = await Book.find({});
     const response = await Promise.all(books.map(async value => {
         const authors = await Promise.all(value.authors.map(async author => {
@@ -33,10 +55,10 @@ async function viewBook(_, res, _) {
             collectives
         }
     }));
-    res.send(response)
+    return response;
 }
 
-async function viewArticleBook(_, res, _) {
+async function viewArticleBook() {
     const articles = await ArticleBook.find({})
     const response = await Promise.all(articles.map(async value => {
         const authors = await Promise.all(value.authors.map(async author => {
@@ -72,10 +94,10 @@ async function viewArticleBook(_, res, _) {
             book
         }
     }));
-    res.send(response)
+    return response;
 }
 
-async function viewArticleMagazine(_, res, _) {
+async function viewArticleMagazine() {
     const articles = await ArticleMagazine.find({});
     const response = await Promise.all(articles.map(async value => {
         const authors = await Promise.all(value.authors.map(async author => {
@@ -87,10 +109,10 @@ async function viewArticleMagazine(_, res, _) {
             authors
         }
     }));
-    res.send(response)
+    return response;
 }
 
-async function viewArticleNewspaper(_, res, _) {
+async function viewArticleNewspaper() {
     const articles = await ArticleNewspaper.find({});
     const response = await Promise.all(articles.map(async value => {
         const authors = await Promise.all(value.authors.map(async author => {
@@ -102,10 +124,10 @@ async function viewArticleNewspaper(_, res, _) {
             authors
         }
     }));
-    res.send(response)
+    return response;
 }
 
-async function viewConference(_, res, _) {
+async function viewConference() {
     const conferences = await Conference.find({});
     const response = await Promise.all(conferences.map(async value => {
         const editors = await Promise.all(value.editors.map(async editor => {
@@ -117,12 +139,12 @@ async function viewConference(_, res, _) {
             editors
         }
     }));
-    res.send(response)
+    return response;
 }
 
-function viewSite(_, res, _) {
+function viewSite() {
     Site.find({}).then(data => {
-        res.send(data);
+        return data;
     });
 }
 

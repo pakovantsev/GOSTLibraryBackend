@@ -5,7 +5,7 @@ const read = require('../controller/CRUD/read')
 const bodyparser = require('body-parser');
 
 router.use(bodyparser.json())
-router.get('/book',read.viewBook)
+router.get('/book/:code',read.viewBook)
 // router.get('/articleBook',library.viewArticleBook)
 // router.get('/articleMagazine',library.viewArticleMagazine)
 // router.get('/articleNewspaper',library.viewArticleNewspaper)
