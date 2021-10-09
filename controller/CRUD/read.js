@@ -1,11 +1,9 @@
-import { 
-    BOOK_CODE, 
-    ARTICLE_BOOK_CODE, 
-    ARTICLE_MAGAZINE_CODE, 
-    ARTICLE_NEWSPAPER_CODE, 
-    CONFERENCE_CODE, 
-    SITE_CODE, 
-} from './constants/constants'
+const BOOK_CODE = 'BOOK_CODE';
+const ARTICLE_BOOK_CODE = 'BOOK_CODE';
+const ARTICLE_MAGAZINE_CODE = 'BOOK_CODE';
+const ARTICLE_NEWSPAPER_CODE = 'BOOK_CODE';
+const CONFERENCE_CODE = 'BOOK_CODE';
+const SITE_CODE = 'BOOK_CODE';
 
 const Book = require('../../models/Sources/book')
 const ArticleBook = require('../../models/Sources/articleBook')
@@ -29,7 +27,16 @@ async function read(req,res, _) {
     }
  }
 
-async function viewAll() { }
+async function viewAll() { 
+    const book = await viewBook();
+    const articleBook = await viewArticleBook();
+    const articleMagazine = await viewArticleMagazine();
+    const articleNewspaper = await viewArticleNewspaper();
+    const conference = await viewConference();
+    const site = await viewSite();
+    return [...book, ...articleBook, ...articleMagazine, ...articleNewspaper, ...conference, ...site];
+
+}
 
 async function viewBook() {
     const books = await Book.find({});
