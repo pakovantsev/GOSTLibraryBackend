@@ -12,12 +12,12 @@ const Collective = require('../../models/collective')
 async function read(req,res, _) {
     const code = req.params.code;
     switch (code) {
-        case CODES.BOOK_CODE: res.send(await viewBook());
-        case CODES.ARTICLE_BOOK_CODE: res.send(await viewArticleBook());
-        case CODES.ARTICLE_MAGAZINE_CODE: res.send(await viewArticleMagazine());
-        case CODES.ARTICLE_NEWSPAPER_CODE: res.send(await viewArticleNewspaper());
-        case CODES.CONFERENCE_CODE: res.send(await viewConference());
-        case CODES.SITE_CODE: res.send(await viewSite());
+        case CODES.BOOK_CODE: return res.send(await viewBook());
+        case CODES.ARTICLE_BOOK_CODE: return res.send(await viewArticleBook());
+        case CODES.ARTICLE_MAGAZINE_CODE: return res.send(await viewArticleMagazine());
+        case CODES.ARTICLE_NEWSPAPER_CODE: return res.send(await viewArticleNewspaper());
+        case CODES.CONFERENCE_CODE: return res.send(await viewConference());
+        case CODES.SITE_CODE: return res.send(await viewSite());
         default: res.send(await viewAll());
     }
  }

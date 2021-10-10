@@ -7,7 +7,7 @@ const bodyparser = require('body-parser');
 router.use(bodyparser.json())
 router.get('/book/:code', read.read);
 
-router.post('/create/:code',create.createBook);
+router.post('/create/:code',create.create);
 // router.patch('/:id',library.update)
 // router.delete('/delete/:id',library.remove)
 

@@ -8,17 +8,18 @@ const Conference = require('../../models/Sources/conference')
 const Site = require('../../models/Sources/site')
 const People = require('../../models/people')
 const Collective = require('../../models/collective')
+const articleBook = require('../../models/Sources/articleBook')
 
 
 async function create(req, res, _) {
     const code = req.params.code;
     switch (code) {
-        case CODES.BOOK_CODE: res.send(await createBook(req.body));
-        case CODES.ARTICLE_BOOK_CODE: res.send(await createArticleBook(req.body));
-        case CODES.ARTICLE_MAGAZINE_CODE: res.send(await createArticleMagazine(req.body));
-        case CODES.ARTICLE_NEWSPAPER_CODE: res.send(await createArticleNewspaper(req.body));
-        case CODES.CONFERENCE_CODE: res.send(await createConference(req.body));
-        case CODES.SITE_CODE: res.send(await createSite(req.body));
+        case CODES.BOOK_CODE: return res.send(await createBook(req.body));
+        case CODES.ARTICLE_BOOK_CODE: return res.send(await createArticleBook(req.body));
+        case CODES.ARTICLE_MAGAZINE_CODE: return res.send(await createArticleMagazine(req.body));
+        case CODES.ARTICLE_NEWSPAPER_CODE: return res.send(await createArticleNewspaper(req.body));
+        case CODES.CONFERENCE_CODE: return res.send(await createConference(req.body));
+        case CODES.SITE_CODE: return res.send(await createSite(req.body));
         default: res.send('alert');
     } }
 
@@ -103,19 +104,157 @@ async function createBook(body) {
         tomName,
         tomNumber,
     })
-    book.save().then((data) => {
+    book.save().then(data => {
         return data;
     })
 }
 
-async function createArticleBook(body) { }
+async function createArticleBook(body) {
+    const title = body.title;
+    const numberOfPages = body.numberOfPages;
+    const authors =  await Promise.all(body.authors.map(async author => {
+        let people = await People.findOne({
+            surname: author.surname,
+            initials: author.initials,
+        })
+        if (!people) {
+            people = new People({
+                surname: author.surname,
+                initials: author.initials,
+            });
+            await people.save();
+        }
+        return people;
+    }))
+    const book = createBook(book);
+    const articleBook = new ArticleBook({
+        title,
+        authors,
+        book,
+        numberOfPages,
+    })
+    articleBook.save().then(data => {
+        return data;
+    })
+ }
 
-async function createArticleMagazine(body) { }
+async function createArticleMagazine(body) {
+    const title = body.title;
+    const numberOfPages = body.numberOfPages;
+    const magazineTitle = body.magazineTitle;
+    const magazineNumber = body.magazineNumber;
+    const yearOfPublishing = body.yearOfPublishing;
+    const authors =  await Promise.all(body.authors.map(async author => {
+        let people = await People.findOne({
+            surname: author.surname,
+            initials: author.initials,
+        })
+        if (!people) {
+            people = new People({
+                surname: author.surname,
+                initials: author.initials,
+            });
+            await people.save();
+        }
+        return people;
+    }))
+    const articleMagazine = new ArticleMagazine({
+        title,
+        authors,
+        magazineTitle,
+        magazineNumber,
+        yearOfPublishing,
+        numberOfPages,
+    })
+    articleMagazine.save().then(data => {
+        return data;
+    })
+}
 
-async function createArticleNewspaper(body) { }
+async function createArticleNewspaper(body) {
+    const title = body.title;
+    const numberOfPages = body.numberOfPages;
+    const magazineTitle = body.newspaperTitle;
+    const magazineNumber = body.newspaperNumber;
+    const date = body.date;
+    const authors =  await Promise.all(body.authors.map(async author => {
+        let people = await People.findOne({
+            surname: author.surname,
+            initials: author.initials,
+        })
+        if (!people) {
+            people = new People({
+                surname: author.surname,
+                initials: author.initials,
+            });
+            await people.save();
+        }
+        return people;
+    }))
+    const articleNewspaper = new ArticleNewspaper({
+        title,
+        authors,
+        magazineTitle,
+        magazineNumber,
+        date,
+        numberOfPages,
+    })
+    articleNewspaper.save().then(data => {
+        return data;
+    })
+}
 
-async function createConference(body) { }
+async function createConference(body) {
+    const title = body.title;
+    const numberOfPages = body.numberOfPages;
+    const titleInfo = body.titleInfo;
+    const city = body.city;
+    const date = body.date;
+    const place = body.place;
+    const publishingHouse = body.publishingHouse;
+    const editors =  await Promise.all(body.editors.map(async editor => {
+        let people = await People.findOne({
+            surname: editor.surname,
+            initials: editor.initials,
+        })
+        if (!people) {
+            people = new People({
+                surname: editor.surname,
+                initials: editor.initials,
+            });
+            await people.save();
+        }
+        return people;
+    }))
+    const conference = new Conference({
+        title,
+        editors,
+        titleInfo,
+        city,
+        date,
+        place,
+        publishingHouse,
+        numberOfPages,
+    })
+    conference.save().then(data => {
+        return data;
+    }) 
+}
 
-async function createSite(body) { }
+async function createSite(body) {
+    const title = body.title;
+    const URL = body.numberOfPages;
+    const titleInfo = body.titleInfo;
+    const date = body.date;
+    const site = new Site({
+        title,
+        URL,
+        titleInfo,
+        date,
+    })
+    site.save().then(data => {
+        return data;
+    }) 
+}
 
 module.exports.create = create
