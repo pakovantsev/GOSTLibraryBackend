@@ -1,3 +1,5 @@
+const CODES = require('./constants/constants')
+
 const Book = require('../../models/Sources/book')
 const ArticleBook = require('../../models/Sources/articleBook')
 const ArticleMagazine = require('../../models/Sources/articleMagazine')
@@ -7,19 +9,32 @@ const Site = require('../../models/Sources/site')
 const People = require('../../models/people')
 const Collective = require('../../models/collective')
 
-async function createBook(req, res, _) {
-    const title = req.body.title;
-    const titleInfo = req.body.titleInfo;
-    const place = req.body.place;
-    const publishingHouse = req.body.publishingHouse;
-    const rePlace = req.body.rePlace;
-    const rePublishingHouse = req.body.rePublishingHouse;
-    const yearOfPublishing = req.body.yearOfPublishing;
-    const numberOfPages = req.body.numberOfPages;
-    const tomNumber = req.body.tomNumber;
-    const tomCount = req.body.tomCount;
-    const tomName = req.body.tomName;
-    const collectives =  await Promise.all(req.body.collectives.map(async value => {
+
+async function create(req, res, _) {
+    const code = req.params.code;
+    switch (code) {
+        case CODES.BOOK_CODE: res.send(await createBook(req.body));
+        case CODES.ARTICLE_BOOK_CODE: res.send(await createArticleBook(req.body));
+        case CODES.ARTICLE_MAGAZINE_CODE: res.send(await createArticleMagazine(req.body));
+        case CODES.ARTICLE_NEWSPAPER_CODE: res.send(await createArticleNewspaper(req.body));
+        case CODES.CONFERENCE_CODE: res.send(await createConference(req.body));
+        case CODES.SITE_CODE: res.send(await createSite(req.body));
+        default: res.send('alert');
+    } }
+
+async function createBook(body) {
+    const title = body.title;
+    const titleInfo = body.titleInfo;
+    const place = body.place;
+    const publishingHouse = body.publishingHouse;
+    const rePlace = body.rePlace;
+    const rePublishingHouse = body.rePublishingHouse;
+    const yearOfPublishing = body.yearOfPublishing;
+    const numberOfPages = body.numberOfPages;
+    const tomNumber = body.tomNumber;
+    const tomCount = body.tomCount;
+    const tomName = body.tomName;
+    const collectives =  await Promise.all(body.collectives.map(async value => {
         let collective = await Collective.findOne({ name: value.name });
         if (!collective) {
             collective = new Collective({
@@ -29,7 +44,7 @@ async function createBook(req, res, _) {
         }
         return collective;
     }));
-    const authors =  await Promise.all(req.body.authors.map(async author => {
+    const authors =  await Promise.all(body.authors.map(async author => {
         let people = await People.findOne({
             surname: author.surname,
             initials: author.initials,
@@ -43,7 +58,7 @@ async function createBook(req, res, _) {
         }
         return people;
     }))
-    const editors =  await Promise.all(req.body.editors.map(async editor => {
+    const editors =  await Promise.all(body.editors.map(async editor => {
         let people = await People.findOne({
             surname: editor.surname,
             initials: editor.initials,
@@ -57,7 +72,7 @@ async function createBook(req, res, _) {
         }
         return people;
     }))
-    const translators =  await Promise.all(req.body.translators.map(async translator => {
+    const translators =  await Promise.all(body.translators.map(async translator => {
         let people = await People.findOne({
             surname: translator.surname,
             initials: translator.initials,
@@ -89,8 +104,18 @@ async function createBook(req, res, _) {
         tomNumber,
     })
     book.save().then((data) => {
-        res.send(data)
+        return data;
     })
 }
 
-module.exports.createBook = createBook
+async function createArticleBook(body) { }
+
+async function createArticleMagazine(body) { }
+
+async function createArticleNewspaper(body) { }
+
+async function createConference(body) { }
+
+async function createSite(body) { }
+
+module.exports.create = create

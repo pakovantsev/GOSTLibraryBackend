@@ -1,9 +1,4 @@
-const BOOK_CODE = 'BOOK_CODE';
-const ARTICLE_BOOK_CODE = 'BOOK_CODE';
-const ARTICLE_MAGAZINE_CODE = 'BOOK_CODE';
-const ARTICLE_NEWSPAPER_CODE = 'BOOK_CODE';
-const CONFERENCE_CODE = 'BOOK_CODE';
-const SITE_CODE = 'BOOK_CODE';
+const CODES = require('./constants/constants')
 
 const Book = require('../../models/Sources/book')
 const ArticleBook = require('../../models/Sources/articleBook')
@@ -17,12 +12,12 @@ const Collective = require('../../models/collective')
 async function read(req,res, _) {
     const code = req.params.code;
     switch (code) {
-        case BOOK_CODE: res.send(await viewBook());
-        case ARTICLE_BOOK_CODE: res.send(await viewArticleBook());
-        case ARTICLE_MAGAZINE_CODE: res.send(await viewArticleMagazine());
-        case ARTICLE_NEWSPAPER_CODE: res.send(await viewArticleNewspaper());
-        case CONFERENCE_CODE: res.send(await viewConference());
-        case SITE_CODE: res.send(await viewSite());
+        case CODES.BOOK_CODE: res.send(await viewBook());
+        case CODES.ARTICLE_BOOK_CODE: res.send(await viewArticleBook());
+        case CODES.ARTICLE_MAGAZINE_CODE: res.send(await viewArticleMagazine());
+        case CODES.ARTICLE_NEWSPAPER_CODE: res.send(await viewArticleNewspaper());
+        case CODES.CONFERENCE_CODE: res.send(await viewConference());
+        case CODES.SITE_CODE: res.send(await viewSite());
         default: res.send(await viewAll());
     }
  }
@@ -156,9 +151,3 @@ function viewSite() {
 }
 
 module.exports.read = read
-module.exports.viewBook = viewBook
-module.exports.viewArticleBook = viewArticleBook
-module.exports.viewArticleMagazine = viewArticleMagazine
-module.exports.viewArticleNewspaper = viewArticleNewspaper
-module.exports.viewConference = viewConference
-module.exports.viewSite = viewSite
