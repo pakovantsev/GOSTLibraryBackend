@@ -19,15 +19,22 @@ async function saveSource(sourceBody) {
 
 async function create(req, res, _) {
     const code = req.params.code;
+    let source;
     switch (code) {
-        case CODES.BOOK_CODE: return res.send(await saveSource({ code, source: await createBook(req.body) }));
-        case CODES.ARTICLE_BOOK_CODE: return res.send(await saveSource({ code, source: await createArticleBook(req.body)}));
-        case CODES.ARTICLE_MAGAZINE_CODE: return res.send(await saveSource({ code, source: await createArticleMagazine(req.body)}));
-        case CODES.ARTICLE_NEWSPAPER_CODE: return res.send(await saveSource({ code, source: await createArticleNewspaper(req.body)}));
-        case CODES.CONFERENCE_CODE: return res.send(await saveSource({ code, source: await createConference(req.body)}));
-        case CODES.SITE_CODE: return res.send(await saveSource({ code, source: await createSite(req.body)}));
+        case CODES.BOOK_CODE: source = await createBook(req.body);
+        case CODES.ARTICLE_BOOK_CODE: source = await createArticleBook(req.body);
+        case CODES.ARTICLE_MAGAZINE_CODE: source = await createArticleMagazine(req.body);
+        case CODES.ARTICLE_NEWSPAPER_CODE: source = await createArticleNewspaper(req.body);
+        case CODES.CONFERENCE_CODE: source = await createConference(req.body);
+        case CODES.SITE_CODE: source = await createSite(req.body);
         default: res.send('alert');
-    } 
+    }
+    return res.send(
+        await saveSource({ 
+            code, 
+            source,
+        })
+    );
 }
 
 async function createBook(body) {
@@ -206,7 +213,7 @@ async function createArticleNewspaper(body) {
         date,
         numberOfPages,
     };
-    const articleNewspaper = await ArticleNewspaper.findOne(ArticleNewspaper) || new ArticleNewspaper(articleNewspaperBody);
+    const articleNewspaper = await ArticleNewspaper.findOne(articleNewspaperBody) || new ArticleNewspaper(articleNewspaperBody);
     await articleNewspaper.save();
     return articleNewspaper;
 }
