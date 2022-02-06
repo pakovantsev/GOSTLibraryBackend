@@ -8,7 +8,6 @@ const Conference = require('../../models/Sources/conference')
 const Site = require('../../models/Sources/site')
 const People = require('../../models/people')
 const Collective = require('../../models/collective')
-const articleBook = require('../../models/Sources/articleBook')
 
 
 async function create(req, res, _) {
