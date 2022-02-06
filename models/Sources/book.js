@@ -22,7 +22,7 @@ const book = new mongoose.Schema({
     } ],
     collectives: [ {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Collectives',
+        ref: 'Collective',
     } ],
     place: {
         type: String,
