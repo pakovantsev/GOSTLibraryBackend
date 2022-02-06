@@ -6,21 +6,29 @@ const ArticleMagazine = require('../../models/Sources/articleMagazine')
 const ArticleNewspaper = require('../../models/Sources/articleNewspaper')
 const Conference = require('../../models/Sources/conference')
 const Site = require('../../models/Sources/site')
-const People = require('../../models/people')
-const Collective = require('../../models/collective')
+const People = require('../../models/CommonModels/people')
+const Collective = require('../../models/CommonModels/collective')
+const Source = require('../../models/source')
 
+
+async function saveSource(sourceBody) {
+    const source = await Source.findOne(sourceBody) || new Source(sourceBody);
+    await source.save();
+    return source;
+}
 
 async function create(req, res, _) {
     const code = req.params.code;
     switch (code) {
-        case CODES.BOOK_CODE: return res.send(await createBook(req.body));
-        case CODES.ARTICLE_BOOK_CODE: return res.send(await createArticleBook(req.body));
-        case CODES.ARTICLE_MAGAZINE_CODE: return res.send(await createArticleMagazine(req.body));
-        case CODES.ARTICLE_NEWSPAPER_CODE: return res.send(await createArticleNewspaper(req.body));
-        case CODES.CONFERENCE_CODE: return res.send(await createConference(req.body));
-        case CODES.SITE_CODE: return res.send(await createSite(req.body));
+        case CODES.BOOK_CODE: return res.send(await saveSource({ code, source: await createBook(req.body) }));
+        case CODES.ARTICLE_BOOK_CODE: return res.send(await saveSource({ code, source: await createArticleBook(req.body)}));
+        case CODES.ARTICLE_MAGAZINE_CODE: return res.send(await saveSource({ code, source: await createArticleMagazine(req.body)}));
+        case CODES.ARTICLE_NEWSPAPER_CODE: return res.send(await saveSource({ code, source: await createArticleNewspaper(req.body)}));
+        case CODES.CONFERENCE_CODE: return res.send(await saveSource({ code, source: await createConference(req.body)}));
+        case CODES.SITE_CODE: return res.send(await saveSource({ code, source: await createSite(req.body)}));
         default: res.send('alert');
-    } }
+    } 
+}
 
 async function createBook(body) {
     const title = body.title;
@@ -86,7 +94,7 @@ async function createBook(body) {
         }
         return people;
     }))
-    const book = new Book({
+    const bookBody = {
         title,
         titleInfo,
         authors,
@@ -102,10 +110,10 @@ async function createBook(body) {
         tomCount,
         tomName,
         tomNumber,
-    })
-    book.save().then(data => {
-        return data;
-    })
+    };
+    const book = await Book.findOne(bookBody) || new Book(bookBody);
+    await book.save();
+    return book;
 }
 
 async function createArticleBook(body) {
@@ -125,17 +133,17 @@ async function createArticleBook(body) {
         }
         return people;
     }))
-    const book = createBook(book);
-    const articleBook = new ArticleBook({
+    const book = createBook(body.book);
+    const articleBookBody = {
         title,
         authors,
         book,
         numberOfPages,
-    })
-    articleBook.save().then(data => {
-        return data;
-    })
- }
+    };
+    const articleBook = await ArticleBook.findOne(articleBookBody) || new ArticleBook(articleBookBody);
+    await articleBook.save();
+    return articleBook;
+}
 
 async function createArticleMagazine(body) {
     const title = body.title;
@@ -157,17 +165,17 @@ async function createArticleMagazine(body) {
         }
         return people;
     }))
-    const articleMagazine = new ArticleMagazine({
+    const articleMagazineBody = {
         title,
         authors,
         magazineTitle,
         magazineNumber,
         yearOfPublishing,
         numberOfPages,
-    })
-    articleMagazine.save().then(data => {
-        return data;
-    })
+    };
+    const articleMagazine = await ArticleMagazine.findOne(articleMagazineBody) || new ArticleMagazine(articleMagazineBody);
+    await articleMagazine.save();
+    return articleMagazine;
 }
 
 async function createArticleNewspaper(body) {
@@ -190,17 +198,17 @@ async function createArticleNewspaper(body) {
         }
         return people;
     }))
-    const articleNewspaper = new ArticleNewspaper({
+    const articleNewspaperBody = {
         title,
         authors,
         magazineTitle,
         magazineNumber,
         date,
         numberOfPages,
-    })
-    articleNewspaper.save().then(data => {
-        return data;
-    })
+    };
+    const articleNewspaper = await ArticleNewspaper.findOne(ArticleNewspaper) || new ArticleNewspaper(articleNewspaperBody);
+    await articleNewspaper.save();
+    return articleNewspaper;
 }
 
 async function createConference(body) {
@@ -225,7 +233,7 @@ async function createConference(body) {
         }
         return people;
     }))
-    const conference = new Conference({
+    const conferenceBody = {
         title,
         editors,
         titleInfo,
@@ -234,10 +242,10 @@ async function createConference(body) {
         place,
         publishingHouse,
         numberOfPages,
-    })
-    conference.save().then(data => {
-        return data;
-    }) 
+    };
+    const conference = await Conference.findOne(conferenceBody) || new Conference(conferenceBody);
+    await conference.save();
+    return conference;
 }
 
 async function createSite(body) {
@@ -245,15 +253,15 @@ async function createSite(body) {
     const URL = body.numberOfPages;
     const titleInfo = body.titleInfo;
     const date = body.date;
-    const site = new Site({
+    const siteBody = {
         title,
         URL,
         titleInfo,
         date,
-    })
-    site.save().then(data => {
-        return data;
-    }) 
+    };
+    const site = await Site.findOne(siteBody) || new Site(siteBody);
+    await site.save();
+    return site;
 }
 
-module.exports.create = create
+module.exports = create
