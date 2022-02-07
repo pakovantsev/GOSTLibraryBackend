@@ -10,6 +10,17 @@ const People = require('../../models/CommonModels/people')
 const Collective = require('../../models/CommonModels/collective')
 const Source = require('../../models/source')
 
+async function savePeoplesArray(peoples){
+    return Array.isArray(peoples) && await Promise.all(peoples.map(async people => {
+        const peopleModelBody = {
+            surname: people.surname,
+            initials: people.initials,
+        };
+        const peopleModel = await People.findOne(peopleModelBody) || new People(peopleModelBody);
+        await peopleModel.save();
+        return peopleModel;
+    }))
+}
 
 async function saveSource(sourceBody) {
     const source = await Source.findOne(sourceBody) || new Source(sourceBody);
@@ -17,7 +28,7 @@ async function saveSource(sourceBody) {
     return source;
 }
 
-async function create(req, res, _) {
+async function createSource(req, res, _) {
     const code = req.params.code;
     let source;
     switch (code) {
@@ -38,17 +49,6 @@ async function create(req, res, _) {
 }
 
 async function createBook(body) {
-    const title = body.title;
-    const titleInfo = body.titleInfo;
-    const place = body.place;
-    const publishingHouse = body.publishingHouse;
-    const rePlace = body.rePlace;
-    const rePublishingHouse = body.rePublishingHouse;
-    const yearOfPublishing = body.yearOfPublishing;
-    const numberOfPages = body.numberOfPages;
-    const tomNumber = body.tomNumber;
-    const tomCount = body.tomCount;
-    const tomName = body.tomName;
     const collectives = Array.isArray(body.collectives) && await Promise.all(body.collectives.map(async value => {
         let collective = await Collective.findOne({ name: value.name });
         if (!collective) {
@@ -59,64 +59,15 @@ async function createBook(body) {
         }
         return collective;
     }));
-    const authors = Array.isArray(body.authors) && await Promise.all(body.authors.map(async author => {
-        let people = await People.findOne({
-            surname: author.surname,
-            initials: author.initials,
-        })
-        if (!people) {
-            people = new People({
-                surname: author.surname,
-                initials: author.initials,
-            });
-            await people.save();
-        }
-        return people;
-    }))
-    const editors = Array.isArray(body.editors) && await Promise.all(body.editors.map(async editor => {
-        let people = await People.findOne({
-            surname: editor.surname,
-            initials: editor.initials,
-        })
-        if (!people) {
-            people = new People({
-                surname: editor.surname,
-                initials: editor.initials,
-            });
-            await people.save();
-        }
-        return people;
-    }))
-    const translators = Array.isArray(body.translators) && await Promise.all(body.translators?.map(async translator => {
-        let people = await People.findOne({
-            surname: translator.surname,
-            initials: translator.initials,
-        })
-        if (!people) {
-            people = new People({
-                surname: translator.surname,
-                initials: translator.initials,
-            });
-            await people.save();
-        }
-        return people;
-    }))
+    const authors = await savePeoplesArray(body.authors);
+    const editors = await savePeoplesArray(body.editors);
+    const translators = await savePeoplesArray(body.translators);
     const bookBody = {
-        title,
-        titleInfo,
+        ...body,
         authors,
         editors,
         translators,
         collectives,
-        place,
-        publishingHouse,
-        rePlace,
-        rePublishingHouse,
-        yearOfPublishing,
-        numberOfPages,
-        tomCount,
-        tomName,
-        tomNumber,
     };
     const book = await Book.findOne(bookBody) || new Book(bookBody);
     await book.save();
@@ -124,28 +75,12 @@ async function createBook(body) {
 }
 
 async function createArticleBook(body) {
-    const title = body.title;
-    const numberOfPages = body.numberOfPages;
-    const authors = Array.isArray(body.authors) && await Promise.all(body.authors.map(async author => {
-        let people = await People.findOne({
-            surname: author.surname,
-            initials: author.initials,
-        })
-        if (!people) {
-            people = new People({
-                surname: author.surname,
-                initials: author.initials,
-            });
-            await people.save();
-        }
-        return people;
-    }));
+    const authors = await savePeoplesArray(body.authors);
     const book = await createBook(body.book);
     const articleBookBody = {
-        title,
+        ...body,
         authors,
         book,
-        numberOfPages,
     };
     const articleBook = await ArticleBook.findOne(articleBookBody) || new ArticleBook(articleBookBody);
     await articleBook.save();
@@ -153,32 +88,10 @@ async function createArticleBook(body) {
 }
 
 async function createArticleMagazine(body) {
-    const title = body.title;
-    const numberOfPages = body.numberOfPages;
-    const magazineTitle = body.magazineTitle;
-    const magazineNumber = body.magazineNumber;
-    const yearOfPublishing = body.yearOfPublishing;
-    const authors = Array.isArray(body.authors) && await Promise.all(body.authors.map(async author => {
-        let people = await People.findOne({
-            surname: author.surname,
-            initials: author.initials,
-        })
-        if (!people) {
-            people = new People({
-                surname: author.surname,
-                initials: author.initials,
-            });
-            await people.save();
-        }
-        return people;
-    }))
+    const authors = await savePeoplesArray(body.authors);
     const articleMagazineBody = {
-        title,
+        ...body,
         authors,
-        magazineTitle,
-        magazineNumber,
-        yearOfPublishing,
-        numberOfPages,
     };
     const articleMagazine = await ArticleMagazine.findOne(articleMagazineBody) || new ArticleMagazine(articleMagazineBody);
     await articleMagazine.save();
@@ -186,32 +99,10 @@ async function createArticleMagazine(body) {
 }
 
 async function createArticleNewspaper(body) {
-    const title = body.title;
-    const numberOfPages = body.numberOfPages;
-    const newspaperTitle = body.newspaperTitle;
-    const newspaperNumber = body.newspaperNumber;
-    const date = body.date;
-    const authors = Array.isArray(body.authors) && await Promise.all(body.authors.map(async author => {
-        let people = await People.findOne({
-            surname: author.surname,
-            initials: author.initials,
-        })
-        if (!people) {
-            people = new People({
-                surname: author.surname,
-                initials: author.initials,
-            });
-            await people.save();
-        }
-        return people;
-    }))
+    const authors = await savePeoplesArray(body.authors);
     const articleNewspaperBody = {
-        title,
+        ...body,
         authors,
-        newspaperTitle,
-        newspaperNumber,
-        date,
-        numberOfPages,
     };
     const articleNewspaper = await ArticleNewspaper.findOne(articleNewspaperBody) || new ArticleNewspaper(articleNewspaperBody);
     await articleNewspaper.save();
@@ -219,36 +110,10 @@ async function createArticleNewspaper(body) {
 }
 
 async function createConference(body) {
-    const title = body.title;
-    const numberOfPages = body.numberOfPages;
-    const titleInfo = body.titleInfo;
-    const city = body.city;
-    const date = body.date;
-    const place = body.place;
-    const publishingHouse = body.publishingHouse;
-    const editors = Array.isArray(body.editors) && await Promise.all(body.editors.map(async editor => {
-        let people = await People.findOne({
-            surname: editor.surname,
-            initials: editor.initials,
-        })
-        if (!people) {
-            people = new People({
-                surname: editor.surname,
-                initials: editor.initials,
-            });
-            await people.save();
-        }
-        return people;
-    }))
+    const editors = await savePeoplesArray(body.editors);
     const conferenceBody = {
-        title,
+        ...body,
         editors,
-        titleInfo,
-        city,
-        date,
-        place,
-        publishingHouse,
-        numberOfPages,
     };
     const conference = await Conference.findOne(conferenceBody) || new Conference(conferenceBody);
     await conference.save();
@@ -256,19 +121,9 @@ async function createConference(body) {
 }
 
 async function createSite(body) {
-    const title = body.title;
-    const URL = body.URL;
-    const titleInfo = body.titleInfo;
-    const date = body.date;
-    const siteBody = {
-        title,
-        URL,
-        titleInfo,
-        date,
-    };
-    const site = await Site.findOne(siteBody) || new Site(siteBody);
+    const site = await Site.findOne(body) || new Site(body);
     await site.save();
     return site;
 }
 
-module.exports = create
+module.exports = createSource
