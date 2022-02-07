@@ -13,10 +13,10 @@ const articleNewspaper = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    authors: {
+    authors: [ {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'People',
-    },
+    } ],
     date: {
         type: Date,
         required: true,

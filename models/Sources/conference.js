@@ -16,10 +16,10 @@ const conference = new mongoose.Schema({
         type: Date,
         required: true,
     },
-    editors: {
+    editors: [ {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'People',
-    },
+    } ],
     place: {
         type: String,
         required: true,

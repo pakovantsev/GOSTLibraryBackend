@@ -5,10 +5,10 @@ const articleBook = new mongoose.Schema({
         type: String,
         required: true,
     },
-    authors: {
+    authors: [ {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'People',
-    },
+    } ],
     book: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Book',
