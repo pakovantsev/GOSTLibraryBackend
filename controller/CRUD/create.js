@@ -21,12 +21,12 @@ async function create(req, res, _) {
     const code = req.params.code;
     let source;
     switch (code) {
-        case CODES.BOOK_CODE: source = await createBook(req.body);
-        case CODES.ARTICLE_BOOK_CODE: source = await createArticleBook(req.body);
-        case CODES.ARTICLE_MAGAZINE_CODE: source = await createArticleMagazine(req.body);
-        case CODES.ARTICLE_NEWSPAPER_CODE: source = await createArticleNewspaper(req.body);
-        case CODES.CONFERENCE_CODE: source = await createConference(req.body);
-        case CODES.SITE_CODE: source = await createSite(req.body);
+        case CODES.BOOK_CODE: source = await createBook(req.body); break;
+        case CODES.ARTICLE_BOOK_CODE: source = await createArticleBook(req.body); break;
+        case CODES.ARTICLE_MAGAZINE_CODE: source = await createArticleMagazine(req.body); break;
+        case CODES.ARTICLE_NEWSPAPER_CODE: source = await createArticleNewspaper(req.body); break;
+        case CODES.CONFERENCE_CODE: source = await createConference(req.body); break;
+        case CODES.SITE_CODE: source = await createSite(req.body); break;
         default: res.send('alert');
     }
     return res.send(
@@ -49,7 +49,7 @@ async function createBook(body) {
     const tomNumber = body.tomNumber;
     const tomCount = body.tomCount;
     const tomName = body.tomName;
-    const collectives =  await Promise.all(body.collectives.map(async value => {
+    const collectives = Array.isArray(body.collectives) && await Promise.all(body.collectives.map(async value => {
         let collective = await Collective.findOne({ name: value.name });
         if (!collective) {
             collective = new Collective({
@@ -59,7 +59,7 @@ async function createBook(body) {
         }
         return collective;
     }));
-    const authors =  await Promise.all(body.authors.map(async author => {
+    const authors = Array.isArray(body.authors) && await Promise.all(body.authors.map(async author => {
         let people = await People.findOne({
             surname: author.surname,
             initials: author.initials,
@@ -73,7 +73,7 @@ async function createBook(body) {
         }
         return people;
     }))
-    const editors =  await Promise.all(body.editors.map(async editor => {
+    const editors = Array.isArray(body.editors) && await Promise.all(body.editors.map(async editor => {
         let people = await People.findOne({
             surname: editor.surname,
             initials: editor.initials,
@@ -87,7 +87,7 @@ async function createBook(body) {
         }
         return people;
     }))
-    const translators =  await Promise.all(body.translators.map(async translator => {
+    const translators = Array.isArray(body.translators) && await Promise.all(body.translators?.map(async translator => {
         let people = await People.findOne({
             surname: translator.surname,
             initials: translator.initials,
@@ -126,7 +126,7 @@ async function createBook(body) {
 async function createArticleBook(body) {
     const title = body.title;
     const numberOfPages = body.numberOfPages;
-    const authors =  await Promise.all(body.authors.map(async author => {
+    const authors = Array.isArray(body.authors) && await Promise.all(body.authors.map(async author => {
         let people = await People.findOne({
             surname: author.surname,
             initials: author.initials,
@@ -139,8 +139,8 @@ async function createArticleBook(body) {
             await people.save();
         }
         return people;
-    }))
-    const book = createBook(body.book);
+    }));
+    const book = await createBook(body.book);
     const articleBookBody = {
         title,
         authors,
@@ -158,7 +158,7 @@ async function createArticleMagazine(body) {
     const magazineTitle = body.magazineTitle;
     const magazineNumber = body.magazineNumber;
     const yearOfPublishing = body.yearOfPublishing;
-    const authors =  await Promise.all(body.authors.map(async author => {
+    const authors = Array.isArray(body.authors) && await Promise.all(body.authors.map(async author => {
         let people = await People.findOne({
             surname: author.surname,
             initials: author.initials,
@@ -188,10 +188,10 @@ async function createArticleMagazine(body) {
 async function createArticleNewspaper(body) {
     const title = body.title;
     const numberOfPages = body.numberOfPages;
-    const magazineTitle = body.newspaperTitle;
-    const magazineNumber = body.newspaperNumber;
+    const newspaperTitle = body.newspaperTitle;
+    const newspaperNumber = body.newspaperNumber;
     const date = body.date;
-    const authors =  await Promise.all(body.authors.map(async author => {
+    const authors = Array.isArray(body.authors) && await Promise.all(body.authors.map(async author => {
         let people = await People.findOne({
             surname: author.surname,
             initials: author.initials,
@@ -208,8 +208,8 @@ async function createArticleNewspaper(body) {
     const articleNewspaperBody = {
         title,
         authors,
-        magazineTitle,
-        magazineNumber,
+        newspaperTitle,
+        newspaperNumber,
         date,
         numberOfPages,
     };
@@ -226,7 +226,7 @@ async function createConference(body) {
     const date = body.date;
     const place = body.place;
     const publishingHouse = body.publishingHouse;
-    const editors =  await Promise.all(body.editors.map(async editor => {
+    const editors = Array.isArray(body.editors) && await Promise.all(body.editors.map(async editor => {
         let people = await People.findOne({
             surname: editor.surname,
             initials: editor.initials,
@@ -257,7 +257,7 @@ async function createConference(body) {
 
 async function createSite(body) {
     const title = body.title;
-    const URL = body.numberOfPages;
+    const URL = body.URL;
     const titleInfo = body.titleInfo;
     const date = body.date;
     const siteBody = {
